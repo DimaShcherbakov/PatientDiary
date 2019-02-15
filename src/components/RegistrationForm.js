@@ -1,6 +1,7 @@
 import React from "react";
 import { Button } from "@material-ui/core";
 import { Redirect } from "react-router-dom";
+import Error from "./error"
 import axios from "axios";
 import "../styles/register.scss";
 
@@ -10,7 +11,6 @@ class RegistrationForm extends React.Component {
     this.formHandler = this.formHandler.bind(this);
     this.handleUserInput = this.handleUserInput.bind(this);
     this.checkPas = this.checkPas.bind(this);
-    this.uploadImage = this.uploadImage.bind(this);
     this.state = {
       firstName: "",
       secondName: "",
@@ -22,7 +22,11 @@ class RegistrationForm extends React.Component {
       image: "",
       pas1: "",
       pas2: "",
-      truePas: false
+      formErrors: {
+        pasError: "Пароли не совпадают",
+        emailError: "Проверьте email",
+      },
+      formErr: false
     };
   }
   checkPas() {
@@ -40,17 +44,25 @@ class RegistrationForm extends React.Component {
   formHandler(e) {
     e.preventDefault();
     this.checkPas();
-    console.log(this.state);
-  }
-  uploadImage(e) {
-    const files = e.target.files;
-    console.log(files[0]);
-    const formData = new FormData();
-    formData.append("file", files[0]);
-    console.log(formData.get('file'));
-    // axios.post('http://localhost:5000/upload', {
-    //   body:formData
-    // }, {'Content-Type': "multipart/form-data" });
+    if (this.state.pas1 === this.state.pas2){
+      axios.post('http://localhost:5000/register', {
+        firstName: this.state.firstName,
+        secondName: this.state.secondName,
+        thirdName: this.state.thirdName,
+        brthDay: this.state.brthDay,
+        position: this.state.position,
+        telephone: this.state.telephone,
+        email: this.state.email,
+        pas: this.state.pas1,
+        photo: this.state.image
+      }).then(res => {
+        if (res.message) {
+          console.log("User is already existed")
+        } else {
+          console.log("user was added")
+        }
+      })
+    }
   }
   render() {
     if (this.state.truePas) {
@@ -58,9 +70,7 @@ class RegistrationForm extends React.Component {
     }
     return (
       <div>
-        <form
-          action="http://localhost:5000/upload"
-        >
+        <form>
           <h2>Регистрация</h2>
           <div className="main-info">
             <label className="avatar">
@@ -69,7 +79,7 @@ class RegistrationForm extends React.Component {
                   type="file"
                   name="file"
                   accept=".jpg, .jpeg, .png"
-                  onChange={this.uploadImage}
+                  onChange={this.handleUserInput}
                 />
               </div>
             </label>
@@ -80,6 +90,7 @@ class RegistrationForm extends React.Component {
                 name="secondName"
                 value={this.state.secondName}
                 onChange={this.handleUserInput}
+                required
               />
               <label htmlFor="">Имя</label>
               <input
@@ -87,6 +98,7 @@ class RegistrationForm extends React.Component {
                 name="firstName"
                 value={this.state.firstName}
                 onChange={this.handleUserInput}
+                required
               />
               <label htmlFor="">Отчество</label>
               <input
@@ -94,6 +106,7 @@ class RegistrationForm extends React.Component {
                 name="thirdName"
                 value={this.state.thirdName}
                 onChange={this.handleUserInput}
+                required
               />
             </div>
           </div>
@@ -104,6 +117,7 @@ class RegistrationForm extends React.Component {
             name="brthDay"
             value={this.state.brthDay}
             onChange={this.handleUserInput}
+            required
           />
           <label htmlFor="">Должность</label>
           <input
@@ -111,6 +125,7 @@ class RegistrationForm extends React.Component {
             name="position"
             value={this.state.position}
             onChange={this.handleUserInput}
+            required
           />
           <div className="contact-wrap">
             <div>
@@ -119,8 +134,11 @@ class RegistrationForm extends React.Component {
               <input
                 type="tel"
                 name="telephone"
+                pattern = "[\+]\d{3}\s[\(]\d{2}[\)]\s\d{3}[\-]\d{2}[\-]\d{2}"
+                minlength="19" maxlength="19"
                 value={this.state.telephone}
                 onChange={this.handleUserInput}
+                required
               />
             </div>
             <div>
@@ -131,6 +149,7 @@ class RegistrationForm extends React.Component {
                 name="email"
                 value={this.state.email}
                 onChange={this.handleUserInput}
+                required
               />
             </div>
           </div>
@@ -143,6 +162,7 @@ class RegistrationForm extends React.Component {
                 name="pas1"
                 value={this.state.pas1}
                 onChange={this.handleUserInput}
+                required
               />
             </div>
             <div>
@@ -153,6 +173,7 @@ class RegistrationForm extends React.Component {
                 name="pas2"
                 value={this.state.pas2}
                 onChange={this.handleUserInput}
+                required
               />
             </div>
           </div>

@@ -14,7 +14,17 @@ body{
     input{
       padding:5px 5px;
       border-radius: 5px;
+      border: 2px solid black;
       margin: 7px 0px;
+      &:invalid{
+        border-color: red;
+      }
+      &:valid{
+        border-color: green;
+      }
+      &:focus{
+        outline: 0px;
+      }
     }
     .contact-wrap, .pas-wrap{
       display:flex;

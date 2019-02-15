@@ -1,6 +1,7 @@
 import React from 'react'
 import AppBar from 'material-ui/AppBar'
 import InputBase from '@material-ui/core/InputBase'
+import PropTypes from 'prop-types'
 import {indigo700} from "material-ui/styles/colors"
 
 const AppHeader = (props) => (
@@ -12,3 +13,7 @@ const AppHeader = (props) => (
 )
 
 export default AppHeader;
+
+AppHeader.propTypes = {
+  menuClick: PropTypes.func
+}

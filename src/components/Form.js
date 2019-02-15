@@ -1,10 +1,10 @@
 import React from "react";
-import {Button} from '@material-ui/core'
-import {Link, Redirect} from 'react-router-dom'
-import validateEmail from '../utils/validateEmail'
-import Error from "./error"
+import {Button} from '@material-ui/core';
+import {Link, Redirect} from 'react-router-dom';
+import validateEmail from '../utils/validateEmail';
+import Error from "./error";
+import axios from 'axios';
 import "../styles/form.scss";
-import axios from 'axios'
 
 class Form extends React.Component {
   

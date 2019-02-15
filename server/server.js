@@ -27,15 +27,15 @@ const connection = mysql.createConnection({
   host: "localhost",
   user: "root",
   password: "",
-  database: "bd"
+  database: "bd",
+  multipleStatements: true
 });
+
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(multer().array())
-// app.set('view image', 'ejs')
+
 // POST to add data in form
-// INSERT INTO `registration_info` (`id`, `first_name`, `last_name`, `birthday_date`, `email`, `password`)
-// VALUES (NULL, 'Кирилл', 'Черкалов', '12/04/1998', 'kirill@mail.ru', 'kirill');
 connection.connect(err => {
   if (err) {
     throw err;
@@ -87,32 +87,42 @@ app.post("/login", (req, res) => {
         });
       }
     } else {
-        res.status(400)
+        res.status(400);
     }
   });
 });
 app.post("/register", (req, res) => {
-  const firstName = req.body.firstName;
-  const lastName = req.body.lastName;
-  const thirdName = req.body.thirdName;
-  const brthDay = req.body.brthDay;
-  const position = req.body.position;
-  const telephone = req.body.telephone;
-  const email = req.body.email;
-  const pas = req.body.pas;
-  const query = `SELECT email FROM registration_info WHERE email = ?`
-  connection.query(query,[email],(err, rows, fields) => {
-    if (rows[0].email !== email) {
-      const query2 = `INSERT INTO registration_info (id, first_name, last_name,third_name,birthday_date,position,telephone, email, password)
-                        VALUES (NULL, ?, ?, ?, ?, ?, ?, ?, ?)`
-      connection.query(query2,[firstName, lastName, thirdName, brthDay,telephone, position, email, pas]), (err, rows, fields) => {
-        res.json(rows)
-      }
+  let userData = {
+    fN: req.body.firstName,
+    lN: req.body.secondName,
+    tn: req.body.thirdName,
+    bD: req.body.brthDay,
+    pos: req.body.position,
+    tel: req.body.telephone,
+    em: req.body.email,
+    pas: req.body.pas,
+    photo: req.body.photo
+  }
+  console.log(userData)
+  connection.query(`SELECT email FROM registration_info WHERE email = ?`,[userData.em],(err, rows, fields) => {
+    console.log(rows[0])
+    if ( rows[0] ) {
+      res.json( { message: "Такой пользователь уже есть" } );
     } else {
-      res.status(400).json({message: 'Пользователь уже есть'})
-    }
-  })
+        const query2 = `INSERT INTO registration_info(id_registr_info, email, password, first_name, last_name,third_name, 
+                        birthday_date, position, telefone, photo) VALUES ( NULL, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
+        connection.query(query2,[ userData.em,  userData.pas, userData.fN, userData.lN, userData.tn, userData.bD,userData.pos, userData.tel, userData.photo], (err, rows, fields) => {
+          if ( err ) {
+            console.log(err);
+            res.sendStatus(500);
+          } else {
+            res.json(rows);
+          }; 
+        })
+      }
+  })  
 })
+
 app.post("/upload", (req, res) => {
   console.log(req.body)
   res.json({

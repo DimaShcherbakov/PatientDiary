@@ -1,7 +1,8 @@
 import React from "react"
 import Header from "./Header"
-import Footer from "./Footer"
 import Menu from "./Menu"
+import WrapperData from "./WrapperData"
+import {Switch, Route} from "react-router-dom"
 import "../styles/main.scss"
 
 
@@ -30,7 +31,12 @@ class Main extends React.Component{
         />
         <div className = {`content ${openMenu ? 'content-active': ''}`}>
           <Header/>
-          <Footer/>
+          <Switch>
+            <Route exact path = "/main"/>
+            <Route path = "/main/patients" component = {WrapperData}/>
+            <Route path = "/main/notifications"/>
+            <Route path = "/main/messenges"/>
+          </Switch>
         </div>
       </div>
     )
